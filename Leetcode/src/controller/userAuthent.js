@@ -35,9 +35,11 @@ const register = async (req, res) => {
         );
 
         res.cookie('token', token, {
-            httpOnly: true, // Recommended for security
-            maxAge: 60 * 60 * 1000
-        });
+    httpOnly: true,
+    secure: true,      // MUST be true for HTTPS (Render/Vercel)
+    sameSite: 'none',  // MUST be 'none' for cross-domain cookies
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
+});
 
         res.status(200).json({
             user: {
@@ -73,7 +75,12 @@ const adminRegister = async (req, res) => {
             role: "admin"       // explicitly defined
         });
         const token = jwt.sign({ _id: user._id, emailId: user.emailId, role: user.role }, process.env.Secret_Key, { expiresIn: 60 * 60 });
-        res.cookie('token', token, { maxAge: 60 * 60 * 1000 });
+        res.cookie('token', token, {
+    httpOnly: true,
+    secure: true,      // MUST be true for HTTPS (Render/Vercel)
+    sameSite: 'none',  // MUST be 'none' for cross-domain cookies
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
+});
         const reply = {
             firstName: user.firstName,
             emailId: user.emailId,
@@ -103,7 +110,12 @@ const login = async (req, res) => {
             throw new Error("invalid credentials");
         }
         const token = jwt.sign({ _id: user._id, emailId: user.emailId, role: user.role }, process.env.Secret_Key, { expiresIn: 60 * 60 });
-        res.cookie('token', token, { maxAge: 60 * 60 * 1000 });
+        res.cookie('token', token, {
+    httpOnly: true,
+    secure: true,      // MUST be true for HTTPS (Render/Vercel)
+    sameSite: 'none',  // MUST be 'none' for cross-domain cookies
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
+});
         const reply = {
             firstName: user.firstName,
             emailId: user.emailId,
