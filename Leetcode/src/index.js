@@ -12,14 +12,30 @@ const aiRouter=require("./routes/aichat");
 const videoRouter=require("./routes/videoCreator");
 // app.use(rateLimiter)
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://coding-platform-git-main-mpriyanshu22s-projects.vercel.app',
+  'https://coding-platform-9dffqd3mm-mpriyanshu22s-projects.vercel.app'
+];
+
 app.use(cors({
-  origin: [
-    'https://coding-platform-9dffqd3mm-mpriyanshu22s-projects.vercel.app',
-    'http://localhost:5173'
-  ], 
-  credentials: true, // This allows the browser to include cookies in the request
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: function (origin, callback) {
+    // 1. Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+
+    // 2. Check if the origin is in our allowed list OR is a vercel subdomain
+    const isAllowed = allowedOrigins.includes(origin) || origin.endsWith('.vercel.app');
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log("Blocked by CORS:", origin); // This will show in your Render logs
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 app.use(express.json());
