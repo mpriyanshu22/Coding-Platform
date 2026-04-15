@@ -13,7 +13,10 @@ const videoRouter=require("./routes/videoCreator");
 // app.use(rateLimiter)
 
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: [
+    'https://coding-platform-9dffqd3mm-mpriyanshu22s-projects.vercel.app',
+    'http://localhost:5173'
+  ], 
   credentials: true, // This allows the browser to include cookies in the request
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
