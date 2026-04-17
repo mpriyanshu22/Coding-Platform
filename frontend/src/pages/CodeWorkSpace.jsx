@@ -23,6 +23,15 @@ const ProblemPage = () => {
   const { problemId } = useParams();
   const { theme } = useTheme();
 
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     const fetchProblem = async () => {
       setLoading(true);
@@ -125,14 +134,14 @@ const ProblemPage = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-65px)] bg-slate-950 p-2 overflow-hidden text-sm">
-      <PanelGroup direction="horizontal" className="rounded-xl overflow-hidden border border-slate-800 shadow-2xl">
+    <div className="h-[calc(100dvh-64px)] bg-slate-950 md:p-2 overflow-hidden text-sm w-full">
+      <PanelGroup direction={isDesktop ? "horizontal" : "vertical"} className="md:rounded-xl overflow-hidden border-none md:border md:border-slate-800 shadow-2xl">
 
         {/* Left Panel: Description & Details */}
         <Panel defaultSize={45} minSize={30}>
           <div className="h-full bg-slate-900 flex flex-col">
             {/* Tab Navigation */}
-            <div className="flex overflow-x-auto bg-slate-800/50 border-b border-slate-700 p-0.5 gap-0.5 hidescrollbar">
+            <div className="flex overflow-x-auto bg-slate-800/50 border-b border-slate-700 p-0.5 gap-0.5 hidescrollbar shrink-0">
               {[
                 { id: 'description', label: 'Description', icon: AlignLeft, color: 'text-blue-400' },
                 { id: 'editorial', label: 'Editorial', icon: BookOpen, color: 'text-violet-400' },
@@ -239,9 +248,9 @@ const ProblemPage = () => {
           </div>
         </Panel>
 
-        {/* Vertical Resize Handle */}
-        <PanelResizeHandle className="w-1 bg-slate-700 hover:bg-blue-500/50 transition-colors cursor-col-resize relative group">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-12 rounded-full bg-slate-600 group-hover:bg-blue-400 transition-colors"></div>
+        {/* Resize Handle */}
+        <PanelResizeHandle className={`${isDesktop ? 'w-1 cursor-col-resize' : 'h-1 cursor-row-resize'} bg-slate-700 hover:bg-blue-500/50 transition-colors relative group shrink-0`}>
+          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-600 group-hover:bg-blue-400 transition-colors ${isDesktop ? 'w-1 h-12' : 'h-1 w-12'}`}></div>
         </PanelResizeHandle>
 
         {/* Right Panel: Code & Console */}
@@ -253,7 +262,7 @@ const ProblemPage = () => {
                 <div className="h-full bg-slate-900 flex flex-col border-b border-slate-700">
 
                   {/* Code Header */}
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700 bg-slate-800/50 shrink-0">
+                  <div className="flex items-center justify-between px-2 md:px-4 py-2 border-b border-slate-700 bg-slate-800/50 shrink-0">
                     <div className="flex items-center gap-2 text-sm font-semibold text-slate-200">
                       <Code2 size={16} className="text-blue-400" />
                       <span>Code</span>
@@ -271,12 +280,12 @@ const ProblemPage = () => {
                   </div>
 
                   {/* Language Selector */}
-                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-700 bg-slate-800/30 shrink-0">
-                    <div className="flex bg-slate-800 rounded-lg p-1 gap-1">
+                  <div className="flex items-center justify-between px-2 md:px-4 py-2 md:py-2.5 border-b border-slate-700 bg-slate-800/30 shrink-0 overflow-x-auto hidescrollbar">
+                    <div className="flex bg-slate-800 rounded-lg p-1 gap-1 shrink-0">
                       {['javascript', 'java', 'cpp'].map((lang) => (
                         <button
                           key={lang}
-                          className={`px-4 py-1.5 text-xs rounded-md font-semibold transition-all duration-200 ${selectedLanguage === lang
+                          className={`px-3 md:px-4 py-1.5 text-xs rounded-md font-semibold transition-all duration-200 ${selectedLanguage === lang
                             ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
                             : 'text-slate-400 hover:text-slate-300 hover:bg-slate-700/50'
                             }`}
@@ -331,10 +340,10 @@ const ProblemPage = () => {
                 <div className="h-full bg-slate-900 flex flex-col border-t border-slate-700">
 
                   {/* Top: Tabs only */}
-                  <div className="bg-slate-800/80 backdrop-blur-sm border-b border-slate-700 px-4 shrink-0">
-                    <div className="flex items-center gap-0">
+                  <div className="bg-slate-800/80 backdrop-blur-sm border-b border-slate-700 px-2 md:px-4 shrink-0 overflow-x-auto hidescrollbar">
+                    <div className="flex items-center gap-0 w-max">
                       <button
-                        className={`flex items-center gap-2 px-4 py-2.5 text-xs font-medium border-b-2 transition-all duration-200 ${activeRightTab === 'testcase'
+                        className={`flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 text-xs font-medium border-b-2 transition-all duration-200 ${activeRightTab === 'testcase'
                           ? 'border-emerald-500 text-white'
                           : 'border-transparent text-slate-400 hover:text-slate-300'
                           }`}
@@ -345,9 +354,9 @@ const ProblemPage = () => {
                         </svg>
                         Testcase
                       </button>
-                      <div className="text-slate-600 px-2">|</div>
+                      <div className="text-slate-600 px-1 md:px-2">|</div>
                       <button
-                        className={`flex items-center gap-2 px-4 py-2.5 text-xs font-medium border-b-2 transition-all duration-200 ${activeRightTab === 'result'
+                        className={`flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 text-xs font-medium border-b-2 transition-all duration-200 ${activeRightTab === 'result'
                           ? 'border-blue-500 text-white'
                           : 'border-transparent text-slate-400 hover:text-slate-300'
                           }`}
@@ -360,7 +369,7 @@ const ProblemPage = () => {
                   </div>
 
                   {/* Middle: Scrollable Console Content */}
-                  <div className="flex-1 min-h-0 overflow-y-auto p-4 font-mono text-[13px] bg-slate-950">
+                  <div className="flex-1 min-h-0 overflow-y-auto p-2 md:p-4 font-mono text-[13px] bg-slate-950">
                     {activeRightTab === 'testcase' && (
                       <div className="h-full">
                         {!runResult && (
@@ -463,7 +472,7 @@ const ProblemPage = () => {
                   </div>
 
                   {/* Bottom: Run + Submit buttons pinned */}
-                  <div className="shrink-0 border-t border-slate-700 bg-slate-800/80 backdrop-blur-sm px-4 py-2.5 flex items-center justify-end gap-2">
+                  <div className="shrink-0 border-t border-slate-700 bg-slate-800/80 backdrop-blur-sm px-2 md:px-4 py-2 flex items-center justify-end gap-2">
                     <button
                       className="flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-lg border border-slate-600 bg-slate-800 hover:bg-slate-700 hover:border-slate-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={handleRun}
